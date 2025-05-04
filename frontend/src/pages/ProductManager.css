@@ -1,0 +1,114 @@
+.product-manager-container {
+    max-width: 800px;
+    margin: 40px auto 0 auto;
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product-manager-container input,
+  .product-manager-container select,
+  .product-manager-container button {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+  }
+  
+  .product-manager-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .product-manager-container th,
+  .product-manager-container td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  .product-manager-container th {
+    background-color: #f5f5f5;
+  }
+  
+  /* src/pages/ProductManager.css */
+
+.contenedor-productos {
+    max-width: 900px;
+    margin: 40px auto 20px auto; /* Más arriba */
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .contenedor-productos h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .formulario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  
+  .formulario input,
+  .formulario button {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  .formulario button {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .formulario button:hover {
+    background-color: #0056b3;
+  }
+  
+  .tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .tabla th,
+  .tabla td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .tabla th {
+    background-color: #f2f2f2;
+  }
+  
+  .tabla button {
+    margin: 0 5px;
+    padding: 5px 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .tabla button:hover {
+    opacity: 0.8;
+  }
+  
+  .tabla button:first-of-type {
+    background-color: #28a745; /* Editar - Verde */
+    color: white;
+  }
+  
+  .tabla button:last-of-type {
+    background-color: #dc3545; /* Eliminar - Rojo */
+    color: white;
+  }
+  

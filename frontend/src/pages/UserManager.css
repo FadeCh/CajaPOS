@@ -1,0 +1,40 @@
+.user-manager-container {
+    max-width: 1000px;         /* más ancho */
+    margin: 40px auto 0 auto;  /* más arriba y centrado */
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .user-manager-container h2 {
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    text-align: center;
+  }
+  
+  .user-manager-container input,
+  .user-manager-container select,
+  .user-manager-container button {
+    margin-right: 10px;
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .user-manager-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .user-manager-container th,
+  .user-manager-container td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ccc;
+  }
+  
+  .user-manager-container button {
+    cursor: pointer;
+  }
+  

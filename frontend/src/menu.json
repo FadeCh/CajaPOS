@@ -1,7 +1,15 @@
 [
-    { "categoria": "Hand Roll", "nombre": "Hand Roll Pollo Katzu, Palta y Queso", "precio": 3500 },
-    { "categoria": "Hand Roll", "nombre": "Hand Roll Pollo Katzu, Cebollín y Queso", "precio": 3500 },
-    { "categoria": "Hand Roll", "nombre": "Hand Roll Salmón", "precio": 4000 },
+    { "categoria": "Hand Roll", "nombre": "Hand Roll Pollo Katzu, Queso y Palta", "precio": 3500 },
+    { "categoria": "Hand Roll", "nombre": "Hand Roll Pollo Katzu, Queso, Cebollín", "precio": 3500 },
+    { "categoria": "Hand Roll", "nombre": "Hand Roll Pollo Teriyaki, Queso y Palta", "precio": 3500 },
+    { "categoria": "Hand Roll", "nombre": "Hand Roll Pollo Teriyaki, Queso, Cebollín", "precio": 3500 },
+    { "categoria": "Hand Roll", "nombre": "Hand Roll Camarón, Queso y Palta", "precio": 3500 },
+    { "categoria": "Hand Roll", "nombre": "Hand Roll Camarón, Queso, Cebollín", "precio": 3500 },
+    { "categoria": "Hand Roll", "nombre": "Hand Roll Salmón, Queso y Palta", "precio": 4000 },
+    { "categoria": "Hand Roll", "nombre": "Hand Roll Salmón, Queso, Cebollín", "precio": 4000 },
+    { "categoria": "Hand Roll", "nombre": "Hand Roll Kanikama, Queso y Palta", "precio": 4000 },
+    { "categoria": "Hand Roll", "nombre": "Hand Roll Kanikama, Queso, Cebollín", "precio": 4000 },
+   
     { "categoria": "Hosomaki", "nombre": "Hosomaki Salmón", "precio": 4000 },
     { "categoria": "Hosomaki", "nombre": "Hosomaki Pollo Katzu", "precio": 3800 },
     { "categoria": "Picadillos", "nombre": "Pollo Katzu", "precio": 6000 },
@@ -19,6 +27,14 @@
     { "categoria": "Meats Rolls", "nombre": "AVOCADO MEATS", "precio": 7000 },
     { "categoria": "Meats Rolls", "nombre": "MEATS PREMIUM", "precio": 7500 },
     { "categoria": "Promoción", "nombre": "MIX 50", "precio": 20000 },
-    { "categoria": "Promoción", "nombre": "SUGERENCIA 4", "precio": 32000 }
+    { "categoria": "Promoción", "nombre": "SUGERENCIA 4", "precio": 32000 },
+
+    { "categoria": "Extras", "nombre": "Cambio", "precio": 1000 },
+    { "categoria": "Extras", "nombre": "Soya", "precio": 500 },
+    { "categoria": "Extras", "nombre": "Agridulce", "precio": 500 },
+    { "categoria": "Extras", "nombre": "Palitos", "precio": 500 },
+    { "categoria": "Extras", "nombre": "Wasabi", "precio": 500 },
+    { "categoria": "Extras", "nombre": "Jengibre", "precio": 500 },
+    { "categoria": "Extras", "nombre": "Acevichada", "precio": 800 }
   ]
   

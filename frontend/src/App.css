@@ -36,3 +36,12 @@
     transform: rotate(360deg);
   }
 }
+
+body {
+  margin: 0;
+  padding: 0;
+  background: url("/logolasushiteria.png") no-repeat center center fixed;
+  background-size: cover;
+  font-family: sans-serif;
+}
+

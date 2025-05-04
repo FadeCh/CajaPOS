@@ -1,0 +1,146 @@
+.pedidos-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .pedidos-card {
+    background: white;
+    padding: 20px;
+    margin-top: 40px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 1100px;
+    width: 100%;
+  }
+  
+  .pedidos-titulo {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .boton-excel {
+    display: block;
+    margin: 0 auto 20px auto;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .boton-excel:hover {
+    background-color: #45a049;
+  }
+  
+  .pedidos-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .pedidos-table th,
+  .pedidos-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .pedidos-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  .filtro-fecha {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  
+  .filtro-fecha label {
+    font-weight: bold;
+  }
+  
+  .filtro-fecha input[type="date"],
+  .filtro-fecha button {
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  
+  .filtro-fecha button {
+    background-color: #f44336;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .filtro-fecha button:hover {
+    background-color: #d32f2f;
+  }
+  
+  .paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .paginacion button {
+    padding: 5px 15px;
+    border: none;
+    background-color: #4caf50;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .paginacion button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .paginacion span {
+    font-weight: bold;
+  }
+  
+  .modal-detalle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal-contenido {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+  }
+  
+  .fila-clickable:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+  
+  .total-ventas {
+    margin-top: 20px;
+    font-size: 18px;
+    text-align: right;
+    color: #2d6a4f;
+  }
+  

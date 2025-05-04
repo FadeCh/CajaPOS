@@ -4,21 +4,30 @@ import menu from "../menu.json";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-export default function POS() {
+
+export default function POS({ usuario }) {
   const [horaRetiro, setHoraRetiro] = useState("");
   const [medioPago, setMedioPago] = useState("Efectivo");
   const [observacion, setObservacion] = useState("");
   const [pagado, setPagado] = useState(false);
   const [pedido, setPedido] = useState([]);
   const [cliente, setCliente] = useState("");
-  const [filtro, setFiltro] = useState("Todo");
+  const [filtro, setFiltro] = useState("");
   const [numeroComanda, setNumeroComanda] = useState(1);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [comandasExcel, setComandasExcel] = useState(() => {
+    const stored = localStorage.getItem("comandasExcel");
+    return stored ? JSON.parse(stored) : [];
+  });
 
   useEffect(() => {
-    const stored = localStorage.getItem("numeroComanda");
-    setNumeroComanda(stored ? parseInt(stored) : 1);
+    const storedNumero = localStorage.getItem("numeroComanda");
+    setNumeroComanda(storedNumero ? parseInt(storedNumero) : 1);
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("comandasExcel", JSON.stringify(comandasExcel));
+  }, [comandasExcel]);
 
   const incrementarComanda = () => {
     const next = numeroComanda + 1;
@@ -54,56 +63,84 @@ export default function POS() {
     0
   );
 
-  const imprimirComanda = () => {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    doc.setFontSize(18);
-    //doc.text("La sushitería", pageWidth / 2, 20, { align: "center" });
+  const guardarComandaExcel = () => {
+    const productos = pedido
+      .map((item) => `${item.nombre} x${item.cantidad} ($${item.precio})`)
+      .join(", ");
 
-    doc.setFontSize(12);
+    const nueva = {
+      Numero: numeroComanda,
+      Cliente: cliente,
+      Fecha: new Date().toLocaleString("es-CL"),
+      Total: total,
+      MedioPago: medioPago,
+      Pagado: pagado ? "Sí" : "No",
+      Observacion: observacion,
+      Productos: productos,
+    };
+    setComandasExcel((prev) => [...prev, nueva]);
+  };
+
+  const imprimirComanda = () => {
+    const doc = new jsPDF({ unit: "mm", format: [75, 297] });
+    const pageWidth = 75;
+    let y = 10;
+
+    doc.setFontSize(14);
+    doc.text("La Sushitería", pageWidth / 2, y, { align: "center" });
+    y += 8;
+
+    doc.setFontSize(10);
     const fechaHora = new Date();
     const fechaFormateada = fechaHora.toLocaleString("es-CL", {
       dateStyle: "short",
       timeStyle: "short",
     });
 
-    doc.text(`N° Comanda: ${numeroComanda.toString().padStart(3, '0')}`, pageWidth - 60, 30);
-    doc.text(`${fechaFormateada}`, pageWidth - 60, 36);
+    doc.text(`N° Comanda: ${numeroComanda}`, 5, y);
+    y += 5;
+    doc.text(`${fechaFormateada}`, 5, y);
+    y += 5;
+    doc.text(`Cliente: ${cliente || "Sin nombre"}`, 5, y);
+    y += 5;
+    doc.text(`Retiro: ${horaRetiro || "No definida"}`, 5, y);
+    y += 5;
+    doc.text(`Pago: ${medioPago}`, 5, y);
+    y += 5;
+    doc.text(`Pagado: ${pagado ? "Sí" : "No"}`, 5, y);
+    y += 6;
 
-    let y = 50;
-    doc.setFontSize(14);
-    doc.text(`Cliente: ${cliente || "Sin nombre"}`, 14, y);
-    y += 10;
-    doc.text(`Hora de Retiro: ${horaRetiro || "No definida"}`, 14, y);
-    y += 10;
-
-    // Cuadro de observación
-    doc.setDrawColor(0);
-    doc.rect(14, y, pageWidth - 28, 20);
-    doc.text(`Observaciones: ${observacion}`, 18, y + 10);
-    y += 30;
+    if (observacion) {
+      const lines = doc.splitTextToSize(`Obs: ${observacion}`, 65);
+      doc.setDrawColor(150);
+      doc.rect(5, y, 65, lines.length * 5 + 4);
+      doc.text(lines, 7, y + 6);
+      y += lines.length * 5 + 8;
+    }
 
     const tabla = pedido.map((item) => [
       item.nombre,
       item.cantidad,
       `$${item.precio.toLocaleString("es-CL")}`,
-      `$${(item.precio * item.cantidad).toLocaleString("es-CL")}`,
     ]);
 
     autoTable(doc, {
-      head: [["Producto", "Cantidad", "Precio", "Subtotal"]],
+      head: [["Producto", "Cant", "Precio"]],
       body: tabla,
       startY: y,
-      styles: { halign: 'center' },
-      headStyles: { fillColor: [41, 128, 185] },
+      theme: "grid",
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: {
+        fillColor: [0, 0, 0],
+        textColor: [255, 255, 255],
+        fontSize: 9,
+      },
+      margin: { left: 2, right: 2 },
     });
 
-    const afterTable = doc.lastAutoTable.finalY + 10;
-    doc.text(`Medio de Pago: ${medioPago}`, 14, afterTable);
-    doc.text(`Pagado: ${pagado ? "Sí" : "No"}`, 14, afterTable + 10);
-
-    doc.setFontSize(16);
-    doc.text(`Total: $${total.toLocaleString("es-CL")}`, 14, afterTable + 25);
+    const afterTable = doc.lastAutoTable.finalY + 5;
+    doc.setFontSize(12);
+    doc.text(`Total: $${total.toLocaleString("es-CL")}`, 5, afterTable);
 
     const clienteNombre = cliente.trim().replace(/\s+/g, "_") || "sin_nombre";
     const fechaArchivo = new Date()
@@ -130,7 +167,7 @@ export default function POS() {
       });
 
       imprimirComanda();
-      alert("Pedido enviado con éxito ✅");
+      guardarComandaExcel();
       setPedido([]);
       setCliente("");
       setHoraRetiro("");
@@ -150,66 +187,42 @@ export default function POS() {
     setMostrarModal(true);
   };
 
-  // ... aquí continúa el JSX de la aplicación como ya lo tenías
-
-
   const categorias = ["Todo", ...new Set(menu.map((item) => item.categoria))];
-  const menuFiltrado =
-    filtro === "Todo"
-      ? menu
-      : menu.filter((item) => item.categoria === filtro);
+  const menuFiltrado = !filtro
+    ? []
+    : filtro === "Todo"
+    ? menu
+    : menu.filter((item) => item.categoria === filtro);
 
   return (
-    <div
-      style={{
-        padding: "20px",
-        fontFamily: "sans-serif",
-        maxWidth: 1000,
-        margin: "0 auto",
-      }}
-    >
-      <h1>🧾 La Sushitería</h1>
-
-      <div style={{ marginBottom: "15px" }}>
-        <label>Nombre Cliente: </label>
-        <input
-          type="text"
-          value={cliente}
-          onChange={(e) => setCliente(e.target.value)}
-          placeholder="Ej: Juan Pérez"
-        />
+    <div style={{ padding: "20px", fontFamily: "sans-serif", maxWidth: 1200, margin: "0 auto" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
+        <img src="/logolasushiteria.png" alt="Logo La Sushitería" style={{ height: "70px" }} />
+        <h1 style={{ margin: 0 }}>La Sushitería</h1>
       </div>
 
-      <div style={{ marginBottom: "15px" }}>
-        <label>Hora de Retiro: </label>
-        <input
-          type="time"
-          value={horaRetiro}
-          onChange={(e) => setHoraRetiro(e.target.value)}
-        />
-      </div>
-
-      <div style={{ marginBottom: "15px" }}>
-        <label>Medio de Pago: </label>
-        <select
-          value={medioPago}
-          onChange={(e) => setMedioPago(e.target.value)}
-        >
-          <option value="Efectivo">Efectivo</option>
-          <option value="Transferencia">Transferencia</option>
-          <option value="Tarjeta">Tarjeta</option>
-        </select>
-      </div>
-
-      <div style={{ marginBottom: "15px" }}>
-        <label>
-          <input
-            type="checkbox"
-            checked={pagado}
-            onChange={(e) => setPagado(e.target.checked)}
-          />{" "}
-          Pagado
-        </label>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", margin: "20px 0" }}>
+        <div>
+          <label>Nombre Cliente: </label>
+          <input type="text" value={cliente} onChange={(e) => setCliente(e.target.value)} placeholder="Ej: Juan Pérez" />
+        </div>
+        <div>
+          <label>Hora de Retiro: </label>
+          <input type="time" value={horaRetiro} onChange={(e) => setHoraRetiro(e.target.value)} />
+        </div>
+        <div>
+          <label>Medio de Pago: </label>
+          <select value={medioPago} onChange={(e) => setMedioPago(e.target.value)}>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Transferencia">Transferencia</option>
+            <option value="Tarjeta">Tarjeta</option>
+          </select>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" checked={pagado} onChange={(e) => setPagado(e.target.checked)} /> Pagado
+          </label>
+        </div>
       </div>
 
       <div style={{ marginBottom: "15px" }}>
@@ -226,83 +239,80 @@ export default function POS() {
       <div style={{ marginBottom: "10px" }}>
         <strong>Filtrar por categoría:</strong>{" "}
         <select value={filtro} onChange={(e) => setFiltro(e.target.value)}>
+          <option value="">-- Selecciona categoría --</option>
           {categorias.map((c, i) => (
             <option key={i}>{c}</option>
           ))}
         </select>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "10px",
-        }}
-      >
-        {menuFiltrado.map((item, i) => (
+      {/* Zona de productos + resumen */}
+      <div style={{ display: "flex", gap: "20px", alignItems: "flex-start", marginTop: "20px" }}>
+        <div style={{ flex: 3 }}>
           <div
-            key={i}
             style={{
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-              padding: "10px",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "10px",
             }}
           >
-            <strong>{item.nombre}</strong>
-            <p style={{ margin: "5px 0" }}>${item.precio.toLocaleString("es-CL")}</p>
-            <button onClick={() => agregarItem(item)}>Agregar</button>
+            {menuFiltrado.map((item, i) => (
+              <div
+                key={i}
+                style={{ border: "1px solid #ddd", borderRadius: "8px", padding: "10px" }}
+              >
+                <strong>{item.nombre}</strong>
+                <p style={{ margin: "5px 0" }}>${item.precio.toLocaleString("es-CL")}</p>
+                <button onClick={() => agregarItem(item)}>Agregar</button>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+
+        <div
+          style={{
+            flex: 1,
+            background: "#fff",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            padding: "15px",
+            position: "sticky",
+            top: "20px",
+            height: "fit-content",
+            maxHeight: "80vh",
+            overflowY: "auto",
+          }}
+        >
+          <h2>Resumen del Pedido</h2>
+          {pedido.length === 0 ? (
+            <p>No hay productos aún</p>
+          ) : (
+            <>
+              <ul>
+                {pedido.map((item, i) => (
+                  <li key={i}>
+                    {item.nombre} × {item.cantidad} = $
+                    {(item.precio * item.cantidad).toLocaleString("es-CL")} {" "}
+                    <button onClick={() => eliminarItem(item.nombre)}>❌</button>
+                  </li>
+                ))}
+              </ul>
+              <p><strong>Total:</strong> ${total.toLocaleString("es-CL")}</p>
+              <p><strong>Hora de Retiro:</strong> {horaRetiro || "No definida"}</p>
+              <p><strong>Medio de Pago:</strong> {medioPago}</p>
+              <p><strong>Pagado:</strong> {pagado ? "Sí" : "No"}</p>
+              {observacion && (
+                <p><strong>Observación:</strong> {observacion}</p>
+              )}
+              <button onClick={enviarPedido}>🧾 Enviar Pedido</button>
+            </>
+          )}
+        </div>
       </div>
 
-      <hr style={{ margin: "20px 0" }} />
-
-      <h2>Resumen del Pedido</h2>
-      {pedido.length === 0 ? (
-        <p>No hay productos aún</p>
-      ) : (
-        <>
-          <ul>
-            {pedido.map((item, i) => (
-              <li key={i}>
-                {item.nombre} × {item.cantidad} = ${
-                  (item.precio * item.cantidad).toLocaleString("es-CL")
-                }{" "}
-                <button onClick={() => eliminarItem(item.nombre)}>❌</button>
-              </li>
-            ))}
-          </ul>
-          <p><strong>Total:</strong> ${total.toLocaleString("es-CL")}</p>
-          <p><strong>Hora de Retiro:</strong> {horaRetiro || "No definida"}</p>
-          <p><strong>Medio de Pago:</strong> {medioPago}</p>
-          <p><strong>Pagado:</strong> {pagado ? "Sí" : "No"}</p>
-          {observacion && (
-            <p><strong>Observación:</strong> {observacion}</p>
-          )}
-          <button onClick={enviarPedido}>🧾 Enviar Pedido</button>
-        </>
-      )}
-
       {mostrarModal && (
-        <div style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "rgba(0,0,0,0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-        }}>
-          <div style={{
-            backgroundColor: "#fff",
-            padding: "20px",
-            borderRadius: "10px",
-            width: "90%",
-            maxWidth: "500px"
-          }}>
+        <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <div style={{ backgroundColor: "#fff", padding: "20px", borderRadius: "10px", width: "90%", maxWidth: "500px" }}>
             <h2>¿Confirmar Pedido?</h2>
             <p><strong>Cliente:</strong> {cliente}</p>
             <p><strong>Total:</strong> ${total.toLocaleString("es-CL")}</p>
