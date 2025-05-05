@@ -1,8 +1,8 @@
-const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("usuarios.db");
+const Database = require('better-sqlite3');
+const db = new Database('./usuarios.db', { verbose: console.log });
 
 // Crear tabla si no existe
-db.run(`
+db.prepare(`
   CREATE TABLE IF NOT EXISTS usuarios (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE,
@@ -10,8 +10,6 @@ db.run(`
     rol TEXT,
     activo INTEGER
   )
-`);
+`).run();
 
 module.exports = db;
-
-

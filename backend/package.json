@@ -3,16 +3,17 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "postinstall": "npm rebuild sqlite3 --build-from-source"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "better-sqlite3": "^11.9.1",
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "react-router-dom": "^7.5.0",
-    "sqlite3": "^5.1.7"
+    "react-router-dom": "^7.5.0"
   },
   "description": ""
 }

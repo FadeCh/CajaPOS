@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../db"); // Asegúrate de tener db.js configurado con SQLite o el motor que usas
+const db = require("../db");
 
 // Obtener todos los productos
 router.get("/", (req, res) => {
-  db.all("SELECT * FROM productos", [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
+  try {
+    const rows = db.prepare("SELECT * FROM productos").all();
     res.json(rows);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Agregar producto
@@ -16,11 +18,13 @@ router.post("/", (req, res) => {
   if (!nombre || !precio || !categoria)
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
 
-  const query = "INSERT INTO productos (nombre, precio, categoria) VALUES (?, ?, ?)";
-  db.run(query, [nombre, precio, categoria], function (err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ id: this.lastID });
-  });
+  try {
+    const stmt = db.prepare("INSERT INTO productos (nombre, precio, categoria) VALUES (?, ?, ?)");
+    const result = stmt.run(nombre, precio, categoria);
+    res.json({ id: result.lastInsertRowid });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Editar producto
@@ -28,20 +32,26 @@ router.put("/:id", (req, res) => {
   const { nombre, precio, categoria } = req.body;
   const { id } = req.params;
 
-  const query = "UPDATE productos SET nombre = ?, precio = ?, categoria = ? WHERE id = ?";
-  db.run(query, [nombre, precio, categoria, id], function (err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ updated: this.changes });
-  });
+  try {
+    const stmt = db.prepare("UPDATE productos SET nombre = ?, precio = ?, categoria = ? WHERE id = ?");
+    const result = stmt.run(nombre, precio, categoria, id);
+    res.json({ updated: result.changes });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Eliminar producto
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
-  db.run("DELETE FROM productos WHERE id = ?", [id], function (err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ deleted: this.changes });
-  });
+
+  try {
+    const stmt = db.prepare("DELETE FROM productos WHERE id = ?");
+    const result = stmt.run(id);
+    res.json({ deleted: result.changes });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;
