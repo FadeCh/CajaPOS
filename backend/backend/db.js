@@ -1,24 +1,12 @@
-const Database = require('better-sqlite3');
-const db = new Database('./pedidos.db', { verbose: console.log }); // misma base de datos para todo
+require('dotenv').config();
+const { Pool } = require('pg');
 
-// Crear tabla pedidos
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS pedidos (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    items TEXT,
-    total INTEGER,
-    fecha TEXT
-  )
-`).run();
-
-// Crear tabla productos
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS productos (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombre TEXT NOT NULL,
-    precio INTEGER NOT NULL,
-    categoria TEXT NOT NULL
-  )
-`).run();
+const db = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
 module.exports = db;
+

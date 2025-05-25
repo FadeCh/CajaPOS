@@ -2,14 +2,15 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const result = await db.query("SELECT * FROM pedidos ORDER BY id DESC");
-    res.status(200).json(result.rows);
+    const result = await db.query('SELECT * FROM pedidos');
+    res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 
 router.post("/", (req, res) => {
