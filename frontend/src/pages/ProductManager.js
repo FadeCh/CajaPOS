@@ -22,8 +22,7 @@ export default function ProductManager() {
 
   const obtenerProductos = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_API}/api/productos`);
-
+      const res = await axios.get("${process.env.REACT_APP_API}/api/productos");
       setProductos(res.data);
     } catch (err) {
       console.error("Error al obtener productos", err);
@@ -32,7 +31,7 @@ export default function ProductManager() {
 
   const agregarProducto = async () => {
     try {
-      await axios.post("http://localhost:3001/api/productos", nuevoProducto);
+      await axios.post("${process.env.REACT_APP_API}/api/productos", nuevoProducto);
       obtenerProductos();
       setNuevoProducto({ nombre: "", precio: "", categoria: "" });
     } catch (err) {
@@ -43,7 +42,7 @@ export default function ProductManager() {
   const eliminarProducto = async (id) => {
     if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
     try {
-      await axios.delete(`http://localhost:3001/api/productos/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API}/api/productos/${id}`);
       obtenerProductos();
     } catch (err) {
       console.error("Error al eliminar producto", err);
@@ -52,7 +51,7 @@ export default function ProductManager() {
 
   const guardarEdicion = async (id) => {
     try {
-      await axios.put(`http://localhost:3001/api/productos/${id}`, editadoProducto);
+      await axios.put(`${process.env.REACT_APP_API}/api/productos/${id}`, editadoProducto);
       obtenerProductos();
       setEditandoId(null);
     } catch (err) {

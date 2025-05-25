@@ -16,7 +16,7 @@ export default function UserManager() {
 
   const obtenerUsuarios = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_API}/api/usuarios`);
+      const res = await axios.get("${process.env.REACT_APP_API}/api/usuarios");
       setUsuarios(res.data);
     } catch (err) {
       alert("Error al obtener usuarios");
@@ -28,7 +28,7 @@ export default function UserManager() {
       return alert("Completa todos los campos");
 
     try {
-      await axios.post("http://localhost:3001/api/usuarios/crear", nuevoUsuario);
+      await axios.post("${process.env.REACT_APP_API}/api/usuarios/crear", nuevoUsuario);
       obtenerUsuarios();
       setNuevoUsuario({ username: "", password: "", rol: "usuario" });
     } catch (err) {
@@ -38,7 +38,7 @@ export default function UserManager() {
 
   const desactivarUsuario = async (username) => {
     try {
-      await axios.put(`http://localhost:3001/api/usuarios/desactivar/${username}`);
+      await axios.put(`${process.env.REACT_APP_API}/api/usuarios/desactivar/${username}`);
       obtenerUsuarios();
     } catch (err) {
       alert("Error al desactivar usuario");
@@ -49,7 +49,7 @@ export default function UserManager() {
     if (!window.confirm("¿Estás seguro de eliminar este usuario?")) return;
 
     try {
-      await axios.delete(`http://localhost:3001/api/usuarios/eliminar/${username}`);
+      await axios.delete(`${process.env.REACT_APP_API}/api/usuarios/eliminar/${username}`);
       obtenerUsuarios();
     } catch (err) {
       alert("Error al eliminar usuario");

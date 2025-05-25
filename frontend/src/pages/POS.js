@@ -155,8 +155,7 @@ export default function POS({ usuario }) {
 
   const confirmarEnvio = async () => {
     try {
-      await axios.post(`${process.env.REACT_APP_API}/api/pedidos`, { 
-
+      await axios.post("${process.env.REACT_APP_API}/api/pedidos", {
         cliente,
         horaRetiro,
         items: pedido,
