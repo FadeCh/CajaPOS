@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
+require('./db'); // 🛠️ Ejecuta la conexión y creación de tablas
 const app = express();
+
 
 app.use(cors()); // 👈 primero
 app.use(express.json());
