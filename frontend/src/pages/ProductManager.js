@@ -22,7 +22,8 @@ export default function ProductManager() {
 
   const obtenerProductos = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/api/productos");
+      const res = await axios.get(`${process.env.REACT_APP_API}/api/productos`);
+
       setProductos(res.data);
     } catch (err) {
       console.error("Error al obtener productos", err);

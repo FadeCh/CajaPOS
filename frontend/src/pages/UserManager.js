@@ -16,7 +16,7 @@ export default function UserManager() {
 
   const obtenerUsuarios = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/api/usuarios");
+      const res = await axios.get(`${process.env.REACT_APP_API}/api/usuarios`);
       setUsuarios(res.data);
     } catch (err) {
       alert("Error al obtener usuarios");

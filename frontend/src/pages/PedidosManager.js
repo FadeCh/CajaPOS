@@ -13,7 +13,7 @@ export default function PedidosManager() {
   const pedidosPorPagina = 10;
 
   useEffect(() => {
-    axios.get("http://localhost:3001/api/pedidos")
+    axios.get(`${process.env.REACT_APP_API}/api/pedidos`)
       .then((res) => setPedidos(res.data))
       .catch(() => alert("Error al obtener pedidos"));
   }, []);
