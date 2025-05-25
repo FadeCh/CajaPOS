@@ -1,15 +1,18 @@
-const Database = require('better-sqlite3');
-const db = new Database('./usuarios.db', { verbose: console.log });
+const db = require('./db');
 
-// Crear tabla si no existe
-db.prepare(`
+// Crear tabla si no existe (solo la primera vez)
+db.query(`
   CREATE TABLE IF NOT EXISTS usuarios (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     username TEXT UNIQUE,
     password TEXT,
     rol TEXT,
-    activo INTEGER
+    activo BOOLEAN
   )
-`).run();
+`).then(() => {
+  console.log("Tabla 'usuarios' verificada");
+}).catch(err => {
+  console.error("Error creando/verificando tabla usuarios:", err);
+});
 
 module.exports = db;
