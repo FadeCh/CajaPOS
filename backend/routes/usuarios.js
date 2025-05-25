@@ -1,65 +1,57 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../dbUsuarios");
+const db = require("../db");
 
-// Login
-router.post("/login", (req, res) => {
-  const { username, password } = req.body;
+// Obtener todos los usuarios
+router.get("/", async (req, res) => {
   try {
-    const row = db.prepare("SELECT * FROM usuarios WHERE username = ? AND password = ? AND activo = 1")
-                 .get(username, password);
-
-    if (!row) {
-      return res.status(401).json({ error: "Credenciales inválidas o usuario desactivado" });
-    }
-
-    res.json({ username: row.username, rol: row.rol });
+    const result = await db.query("SELECT * FROM usuarios ORDER BY id ASC");
+    res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Crear usuario (solo superadmin)
-router.post("/crear", (req, res) => {
-  const { username, password, rol } = req.body;
-  try {
-    const result = db.prepare(
-      "INSERT INTO usuarios (username, password, rol, activo) VALUES (?, ?, ?, 1)"
-    ).run(username, password, rol);
+// Crear nuevo usuario
+router.post("/", async (req, res) => {
+  const { username, password, rol, activo } = req.body;
+  if (!username || !password || !rol)
+    return res.status(400).json({ error: "Faltan datos obligatorios" });
 
-    res.json({ id: result.lastInsertRowid });
+  try {
+    const result = await db.query(
+      "INSERT INTO usuarios (username, password, rol, activo) VALUES ($1, $2, $3, $4) RETURNING id",
+      [username, password, rol, activo ?? 1]
+    );
+    res.status(201).json({ id: result.rows[0].id });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Desactivar usuario
-router.put("/desactivar/:username", (req, res) => {
-  const { username } = req.params;
+// Actualizar usuario
+router.put("/:id", async (req, res) => {
+  const { username, password, rol, activo } = req.body;
+  const { id } = req.params;
+
   try {
-    db.prepare("UPDATE usuarios SET activo = 0 WHERE username = ?").run(username);
-    res.json({ message: "Usuario desactivado" });
+    const result = await db.query(
+      "UPDATE usuarios SET username = $1, password = $2, rol = $3, activo = $4 WHERE id = $5",
+      [username, password, rol, activo, id]
+    );
+    res.json({ updated: result.rowCount });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // Eliminar usuario
-router.delete("/eliminar/:username", (req, res) => {
-  const { username } = req.params;
-  try {
-    db.prepare("DELETE FROM usuarios WHERE username = ?").run(username);
-    res.json({ message: "Usuario eliminado" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
 
-// Listar usuarios (solo uno de estos dos endpoints debe quedar)
-router.get("/", (req, res) => {
   try {
-    const rows = db.prepare("SELECT id, username, rol, activo FROM usuarios").all();
-    res.json(rows);
+    const result = await db.query("DELETE FROM usuarios WHERE id = $1", [id]);
+    res.json({ deleted: result.rowCount });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

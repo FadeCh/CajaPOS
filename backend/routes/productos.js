@@ -3,52 +3,55 @@ const router = express.Router();
 const db = require("../db");
 
 // Obtener todos los productos
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const rows = db.prepare("SELECT * FROM productos").all();
-    res.json(rows);
+    const result = await db.query("SELECT * FROM productos ORDER BY id ASC");
+    res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // Agregar producto
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { nombre, precio, categoria } = req.body;
   if (!nombre || !precio || !categoria)
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
 
   try {
-    const stmt = db.prepare("INSERT INTO productos (nombre, precio, categoria) VALUES (?, ?, ?)");
-    const result = stmt.run(nombre, precio, categoria);
-    res.json({ id: result.lastInsertRowid });
+    const result = await db.query(
+      "INSERT INTO productos (nombre, precio, categoria) VALUES ($1, $2, $3) RETURNING id",
+      [nombre, precio, categoria]
+    );
+    res.json({ id: result.rows[0].id });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // Editar producto
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   const { nombre, precio, categoria } = req.body;
   const { id } = req.params;
 
   try {
-    const stmt = db.prepare("UPDATE productos SET nombre = ?, precio = ?, categoria = ? WHERE id = ?");
-    const result = stmt.run(nombre, precio, categoria, id);
-    res.json({ updated: result.changes });
+    const result = await db.query(
+      "UPDATE productos SET nombre = $1, precio = $2, categoria = $3 WHERE id = $4",
+      [nombre, precio, categoria, id]
+    );
+    res.json({ updated: result.rowCount });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // Eliminar producto
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const stmt = db.prepare("DELETE FROM productos WHERE id = ?");
-    const result = stmt.run(id);
-    res.json({ deleted: result.changes });
+    const result = await db.query("DELETE FROM productos WHERE id = $1", [id]);
+    res.json({ deleted: result.rowCount });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
