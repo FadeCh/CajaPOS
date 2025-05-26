@@ -8,7 +8,7 @@ export default function Login({ setUsuario }) {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post('https://cajapos-backend.onrender.com/api/usuarios/login', {
+      const res = await axios.post(`${process.env.REACT_APP_API}/api/usuarios/login`, {
         username,
         password,
       });
